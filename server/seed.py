@@ -1,34 +1,31 @@
 #!/usr/bin/env python3
+#server/seed.py
+from random import choice as rc
+from faker import Faker
 
 from app import app
-from models import db, Customer, Review, Item
+from models import db, Pet
 
 with app.app_context():
 
-    Customer.query.delete()
-    Review.query.delete()
-    Item.query.delete()
+    # Create and initialize a faker generator
+    fake = Faker()
 
-    customer1 = Customer(name='Tal Yuri')
-    customer2 = Customer(name='Raha Rosario')
-    customer3 = Customer(name='Luca Mahan')
-    db.session.add_all([customer1, customer2, customer3])
-    db.session.commit()
+    # Delete all rows in the "pets" table
+    Pet.query.delete()
 
-    item1 = Item(name='Laptop Backpack', price=49.99)
-    item2 = Item(name='Insulated Coffee Mug', price=9.99)
-    item3 = Item(name='6 Foot HDMI Cable', price=12.99)
-    db.session.add_all([item1, item2, item3])
-    db.session.commit()
+    # Create an empty list
+    pets = []
 
-    db.session.add(Review(comment="zipper broke the first week",
-                   customer=customer1, item=item1))
-    db.session.add(Review(comment="love this backpack!",
-                   customer=customer2, item=item1))
-    db.session.add(Review(comment="coffee stays hot for hours!",
-                   customer=customer1, item=item2))
-    db.session.add(Review(comment="best coffee mug ever!",
-                   customer=customer3, item=item2))
-    db.session.add(Review(comment="cable too short",
-                   customer=customer3, item=item3))
+    species = ['Dog', 'Cat', 'Chicken', 'Hamster', 'Turtle']
+
+    # Add some Pet instances to the list
+    for n in range(10):
+        pet = Pet(name=fake.first_name(), species=rc(species))
+        pets.append(pet)
+
+    # Insert each Pet in the list into the "pets" table
+    db.session.add_all(pets)
+
+    # Commit the transaction
     db.session.commit()
